@@ -5,8 +5,7 @@ class Axel {
 	private $cache;
 	private $saveCache = false;
 	private $modules = [];
-	private $moduleDir;
-	
+
 	public function __construct(Cache $cache = null) {	
 		$this->cache = $cache;	
 		spl_autoload_register([$this, 'load']);
