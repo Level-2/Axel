@@ -6,10 +6,10 @@ class Axel {
 	private $saveCache = false;
 	private $modules = [];
 
-	public function __construct(Cache $cache = null) {	
+	public function __construct(\ArrayAccess $cache = null) {	
 		$this->cache = $cache;	
 		spl_autoload_register([$this, 'load']);
-		$this->paths = ($this->cache !== null) ? $this->cache->load('axelpaths') : [];		
+		$this->paths = ($this->cache !== null) ? $this->cache['axelpaths'] : [];		
 	}
 
 	public function load($className) {
@@ -41,6 +41,6 @@ class Axel {
 	}
 	
 	public function __destruct() {
-		if ($this->cache !== null && $this->saveCache) $this->cache->save('axelpaths', $this->paths);
+		if ($this->cache !== null && $this->saveCache) $this->cache['axelpaths'] = $this->paths;
 	}	
 }
