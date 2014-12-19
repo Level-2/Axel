@@ -27,7 +27,7 @@ class Axel {
 		else {
 			foreach ($this->modules as $module) {
 				if ($file = $module->locate($className)) {
-					$this->paths[$classNameLc] = getcwd() . DIRECTORY_SEPARATOR . $file;
+					$this->paths[$classNameLc] = $file;
 					$this->saveCache = true;
 					require_once $this->paths[$classNameLc];
 					break;
