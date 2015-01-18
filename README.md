@@ -150,7 +150,7 @@ class MyAutoloader implements \Autoload\Module {
 		else return false;
 	}	
 }
-
+```
 
 Caching
 -------
