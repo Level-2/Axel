@@ -5,11 +5,14 @@ class Axel {
 	private $cache;
 	private $saveCache = false;
 	private $modules = [];
-
-	public function __construct(\ArrayAccess $cache = null) {	
-		$this->cache = $cache;	
+	private $cacheIndex;
+	
+	public function __construct(\ArrayAccess $cache = null, $cacheIndex = 'axelpaths') {
+		$this->cache = $cache;
+		$this->cacheIndex = $cacheIndex;
 		spl_autoload_register([$this, 'load']);
-		$this->paths = ($this->cache !== null) ? $this->cache['axelpaths'] : [];		
+		$this->paths = ($this->cache && $this->cache[$this->cacheIndex] !== null) ? $this->cache[$this->cacheIndex] : ['axel\module' => __DIR__ . '/module.php', 'axel\module\namespacemap' => __DIR__ .'/modules/namespacemap.php'];
+		$this->addModule(new Module\NamespaceMap(__DIR__ . '/modueles/', 'Axel\\Modules'));
 	}
 
 	public function load($className) {
@@ -35,12 +38,12 @@ class Axel {
 			}
 		}
 	}
-	
+
 	public function addModule(Module $module) {
 		$this->modules[] = $module;
 	}
-	
+
 	public function __destruct() {
-		if ($this->cache !== null && $this->saveCache) $this->cache['axelpaths'] = $this->paths;
-	}	
+		if ($this->cache !== null && $this->saveCache) $this->cache[$this->cacheIndex] = $this->paths;
+	}
 }
