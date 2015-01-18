@@ -53,7 +53,7 @@ Will load the files `./lib/MyLibrary/Foo.php` and `./lib/MyOtherLibrary/Bar/Baz.
 
 ### Case-sensitivity
 
-Because it's (generally a bad idea to make autoloaders case-sensitive)[https://r.je/php-autoloaders-should-not-be-case-sensitive.html], Axel works in a case-insensitive way where possible.
+Because it's [generally a bad idea to make autoloaders case-sensitive](https://r.je/php-autoloaders-should-not-be-case-sensitive.html), Axel works in a case-insensitive way where possible.
 
 
 ```php
