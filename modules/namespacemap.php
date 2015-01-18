@@ -1,6 +1,6 @@
 <?php 
 namespace Axel\Module;
-class NamespaceMap implements \Axel\Module {
+class NamespaceMap implements \Autoload\Module {
 	private $baseDir;
 	private $lowerCaseDirectories;
 	private $lowercaseFiles;

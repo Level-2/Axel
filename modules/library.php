@@ -1,6 +1,6 @@
 <?php
 namespace Axel\Module;
-class Library implements \Axel\Module {
+class Library implements \Autoload\Module {
 	private $libraryDir;
 	private $axel;
 	

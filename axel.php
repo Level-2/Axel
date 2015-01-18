@@ -39,7 +39,7 @@ class Axel {
 		}
 	}
 
-	public function addModule(Module $module) {
+	public function addModule(\Autoload\Module $module) {
 		$this->modules[] = $module;
 	}
 
