@@ -12,7 +12,7 @@ class Axel {
 		$this->cacheIndex = $cacheIndex;
 		spl_autoload_register([$this, 'load']);
 		$this->paths = ($this->cache && $this->cache[$this->cacheIndex] !== null) ? $this->cache[$this->cacheIndex] : ['axel\module' => __DIR__ . '/module.php', 'axel\module\namespacemap' => __DIR__ .'/modules/namespacemap.php'];
-		$this->addModule(new Module\NamespaceMap(__DIR__ . '/modueles/', 'Axel\\Modules'));
+		$this->addModule(new Module\NamespaceMap(__DIR__ . '/modules/', 'Axel\\Modules'));
 	}
 
 	public function load($className) {
