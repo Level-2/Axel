@@ -152,6 +152,28 @@ class MyAutoloader implements \Autoload\Module {
 }
 
 
- 
+Caching
+-------
 
+Axel supports caching. When caching is enabled, `module::locate` is never called if the result has been retrieived previously. When using autoload.json, the file is only parsed if a file from the library has not been autoloaded before.
+
+To enable caching, create a cache class that implements \ArrayAccess. Alternatively and for an example, see [SimpleCache](https://github.com/TomBZombie/SimpleCache/blob/master/SimpleCache.php).
+
+To use a  cache with axel, intiate the cache class:
+
+```php
+require_once 'SimpleCache.php';
+$simpleCache = new \SimpleCache\SimpleCache('./tmp');
+```
+
+Then pass the cache instance as Axel's constuctor argument:
+
+
+```php
+$axel = new \Axel\Axel($simpleCache);
+```
+
+Axel will now cache any paths behind the scenes. Any time a class is loaded its path is cached so it does not need to be located next time the script runs.
+
+You can pass any instance that uses \ArrayAccess for your cache, behind the scenes this could use memcached, a database or any other caching format such as JSON or XML.
 
