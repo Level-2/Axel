@@ -1,0 +1,21 @@
+{
+    "name": "level-2/axel",
+    "version": "1.0",
+    "description": "An autoloader with inbuilt caching",
+    "license": "BSD-2-Clause",
+    "homepage": "https://github.com/Level-2/Transphporm",
+    "keywords": ["autoloader"],
+    "minimum-stability": "dev",
+    "authors": [
+    	{
+    		"name": "Tom Butler",
+    		"email": "tom@r.je"
+    	}
+    ],
+    "require": {
+        "php": ">=5.4.0"
+    },
+    "autoload": {
+    	"classmap": ["./"]
+    }
+}
