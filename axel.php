@@ -11,13 +11,15 @@ class Axel {
 		$this->cache = $cache;
 		$this->cacheIndex = $cacheIndex;
 		spl_autoload_register([$this, 'load']);
-		$this->paths = ($this->cache && $this->cache[$this->cacheIndex] !== null) ? $this->cache[$this->cacheIndex] : ['axel\module' => __DIR__ . '/module.php', 'axel\module\namespacemap' => __DIR__ .'/modules/namespacemap.php'];
-		$this->addModule(new Module\NamespaceMap(__DIR__ . '/modules/', 'Axel\\Modules'));
+		$this->paths = ($this->cache && $this->cache[$this->cacheIndex] !== null) ? $this->cache[$this->cacheIndex] : ['autoload\module' => __DIR__ . '/module.php', 'axel\module\psr0' => __DIR__ .'/module/PSR0.php'];
+
+		$this->addModule(new Module\PSR0(ltrim(str_replace(getcwd(), '', __DIR__), DIRECTORY_SEPARATOR) . '/module', 'Axel\\Module'));
 	}
 
 	public function load($className) {
 		$className = trim($className, '\\');
 		$classNameLc = strtolower($className);
+		
 		if (isset($this->paths[$classNameLc])) {
 			if (file_exists($this->paths[$classNameLc])) require_once $this->paths[$classNameLc];
 			else {
