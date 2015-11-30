@@ -16,13 +16,13 @@ $axel = new \Axel\Axel;
 
 On its own, Axel does not do anything other than register an autoloader. Once it's been initialised you can tell it where to find your files by adding modules to it.
 
-Module: NamespaceMap
+Module: PSR0
 --------------------
 
-The NamespaceMap module allows you to map a namespace to a directory for example, if you have a project in `./lib/mylibrary/` you can map the namespace `MyLibrary` to the directory using:
+The PSR) module allows you to map a namespace to a directory using the PSR-0 standard. For example, if you have a project in `./lib/mylibrary/` you can map the namespace `MyLibrary` to the directory using:
 
 ```php
-$axel->addModule(new \Axel\Module\NamespaceMap('./lib/MyLibrary', '\\MyLibrary'));
+$axel->addModule(new \Axel\Module\PSR0('./lib/MyLibrary', '\\MyLibrary'));
 ```
 
 Then, when the autoloader is triggered with
@@ -34,10 +34,10 @@ new \MyLibrary\Foo();
 Axel will now try to load the file `./lib/MyLibrary/Foo.php`
 
 
-NamespaceMap can also be applied more generally so you don't have to create an instance of it for each library you're using. If all your libraries are in `./lib` you can map the root namespace to the dir and have everything work:
+PSR0 can also be applied more generally so you don't have to create an instance of it for each library you're using. If all your libraries are in `./lib` you can map the root namespace to the dir and have everything work:
 
 ```php
-$axel->addModule(new \Axel\Module\NamespaceMap('./lib/'));
+$axel->addModule(new \Axel\Module\PSR0('./lib/'));
 ```
 
 This will add `./lib` as the root directory:
@@ -57,7 +57,7 @@ Because it's [generally a bad idea to make autoloaders case-sensitive](https://r
 
 
 ```php
-$axel->addModule(new \Axel\Module\NamespaceMap('./lib/'));
+$axel->addModule(new \Axel\Module\PSR0('./lib/'));
 
 new \MyLibrary\Foo();
 ```
@@ -91,7 +91,7 @@ The autoload.json looks like this:
 {
  'include': ['myautoloader.php'],
  'modules': {
-    'Axel\\Module\\NamespaceMap': ['Foo\\bar', '\\ThisLibrary\\Foo\\Bar'],
+    'Axel\\Module\\PSR0': ['Foo\\bar', '\\ThisLibrary\\Foo\\Bar'],
     'MyLibrary\\MyAutoLoader' : ['constructor', 'args', 'for', 'autoloader', 'in', 'myautoloader.php']
    }
  }
@@ -102,7 +102,7 @@ The autoload.json has two top level elements:
 
 `include` which is an array of files which are automatically included.  
 
-`modules` which is a list of modules to register with the autoloader. This can include NamespaceMap and any custom modules that have been loaded in `include`
+`modules` which is a list of modules to register with the autoloader. This can include PSR0 and any custom modules that have been loaded in `include`
 
 
 Once you've created autoload.json you need to tell Axel to look for it. This is done by registering the module `Axel\Module\Library` with the autoloader:
