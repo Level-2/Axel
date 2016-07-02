@@ -12,16 +12,16 @@ class PSR0 implements \Autoload\Module {
 	}
 	
 	public function locate($className) {
-		if ($this->namespace != null) {
-			if (strpos(strtolower($className), strtolower($this->namespace)) === 0) {
-				$className = str_replace($this->namespace, '', $className);				
-			}	
-		}
-		
 		$parts = explode('\\', $className);
 
+		if ($this->namespace != null) {
+			if (strpos(strtolower($className), strtolower($this->namespace)) === 0) {
+				array_shift($parts);
+			}
+		}
+
 		$file = $this->baseDir . DIRECTORY_SEPARATOR .
-				implode(DIRECTORY_SEPARATOR, $parts) .  '.php';
+			implode(DIRECTORY_SEPARATOR, $parts) .  '.php';
 
 		//First check using case-sensitivity
 		if ($file !== null && is_file($file)) return $file;	 
