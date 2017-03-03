@@ -1,3 +1,4 @@
+
 <?php 
 namespace Axel\Module;
 class PSR0 implements \Autoload\Module {
@@ -12,13 +13,13 @@ class PSR0 implements \Autoload\Module {
 	}
 	
 	public function locate($className) {
-		$parts = explode('\\', $className);
-
 		if ($this->namespace != null) {
 			if (strpos(strtolower($className), strtolower($this->namespace)) === 0) {
-				array_shift($parts);
+				$className = substr_replace($className, '', 0, strlen($this->namespace));
 			}
 		}
+		
+		$parts = explode('\\', $className);
 
 		$file = $this->baseDir . DIRECTORY_SEPARATOR .
 			implode(DIRECTORY_SEPARATOR, $parts) .  '.php';
