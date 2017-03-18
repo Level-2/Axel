@@ -1,5 +1,4 @@
-
-<?php 
+<?php
 namespace Axel\Module;
 class PSR0 implements \Autoload\Module {
 	private $baseDir;
