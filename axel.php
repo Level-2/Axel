@@ -11,7 +11,7 @@ class Axel {
 		$this->cache = $cache;
 		$this->cacheIndex = $cacheIndex;
 		spl_autoload_register([$this, 'load']);
-		$this->paths = ($this->cache && $this->cache[$this->cacheIndex] !== null) ? $this->cache[$this->cacheIndex] : ['autoload\module' => __DIR__ . '/module.php', 'axel\module\PSR4' => __DIR__ .'/module/PSR4.php'];
+		$this->paths = ($this->cache && $this->cache[$this->cacheIndex] !== null) ? $this->cache[$this->cacheIndex] : ['autoload\module' => __DIR__ . '/module.php', 'axel\module\psr4' => __DIR__ .'/module/PSR4.php'];
 
 		$this->addModule(new Module\PSR4(ltrim(str_replace(getcwd(), '', __DIR__), DIRECTORY_SEPARATOR) . '/module', 'Axel\\Module'));
 	}
