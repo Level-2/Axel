@@ -29,7 +29,7 @@ class PSR4 implements \Autoload\Module {
 	public function locate($className) {
 		if ($this->namespace != null) {
 			if (strpos(strtolower($className), strtolower($this->namespace)) === 0) {
-				$className = ltrim(str_replace($this->namespace, '', $className), '\\');	
+				$className = ltrim(substr_replace($className, '', 0, strlen($this->namespace)), '\\');	
 			}	
 		}
 		
