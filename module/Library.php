@@ -26,7 +26,7 @@ class Library implements \Autoload\Module {
 			if (isset($json->include)) 	foreach ($json->include as $file) require_once $this->libraryDir . DIRECTORY_SEPARATOR . $rootNs . $file;
 
 			foreach ($json->modules as $key => $value) 	{
-				if ($key == 'Axel\\Module\\PSR0') {
+				if ($key == 'Axel\\Module\\PSR4') {
 					$value[0] = $this->libraryDir . DIRECTORY_SEPARATOR . $rootNs . $value[0];
 				}
 				$module = new $key(...$value);
