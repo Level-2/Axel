@@ -131,7 +131,6 @@ You can write your own autoload module by implementing the generic \Autoload\Mod
 namespace Axel;
 interface Module {
 	public function locate($className);
-	public function configureAutoloader(Axel $axel): $axel;
 }
 
 ```
@@ -148,12 +147,6 @@ class MyAutoloader implements \Axel\Module {
 		else return false;
 	}
 
-	public function configureAutoloader(\Axel\Axel $axel): \Axel\Axel {
-		//If you want to configure the autoloader with additional modules you can do that here:
-		$axel = $axel->addModule(new PSR4('./foo', '\\Foo'));
-		//Otherwise just return the axel instance unchanged
-		return $axel;
-	}
 }
 ```
 
