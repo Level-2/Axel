@@ -10,10 +10,12 @@ class Axel {
 	public function __construct(\ArrayAccess $cache = null, $cacheIndex = 'axelpaths') {
 		$this->cache = $cache;
 		$this->cacheIndex = $cacheIndex;
-		spl_autoload_register([$this, 'load']);
-		$this->paths = ($this->cache && $this->cache[$this->cacheIndex] != null) ? $this->cache[$this->cacheIndex] : ['autoload\module' => __DIR__ . '/module.php', 'axel\module\psr4' => __DIR__ .'/module/PSR4.php'];
 
-		$this->addModule(new Module\PSR4(ltrim(str_replace(getcwd(), '', __DIR__), DIRECTORY_SEPARATOR) . '/module', 'Axel\\Module'));
+		$this->paths = $this->cache[$this->cacheIndex] ?? ['axel\module' => __DIR__ . '/module.php', 'axel\module\psr4' => __DIR__ .'/module/PSR4.php'];
+
+		$this->register();
+
+		$this->modules[] = new Module\PSR4(ltrim(str_replace(getcwd(), '', __DIR__), DIRECTORY_SEPARATOR) . '/module', 'Axel\\Module');
 	}
 
 	public function load($className) {
@@ -41,8 +43,14 @@ class Axel {
 		}
 	}
 
-	public function addModule(\Autoload\Module $module) {
-		$this->modules[] = $module;
+	public function addModule(\Axel\Module $module) {
+		$axel = $module->configureAutoloader(clone $this);
+		$axel->modules[] = $module;
+		return $axel;
+	}
+
+	public function register() {
+		spl_autoload_register([$this, 'load']);
 	}
 
 	public function __destruct() {

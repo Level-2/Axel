@@ -6,11 +6,11 @@ A modular, extensible, fast, ultra-lightweight PHP autoloader with inbuilt cachi
 Design Philosophy
 -----------------
 
-Axel is fast but flexible. Because Axel caches paths it effectively builds an internal classmap (effectively just a map of file name => class name so the require statement becomes require `$classMap[$className`). This class map can be cached between requests meaning most requests never have to go off looking for files. 
+Axel is fast but flexible.  Axel caches paths by automatically building an internal classmap (effectively just a map of file name => class name so the require statement becomes require `$classMap[$className]`). This class map can be cached between requests meaning most requests never have to go off looking for files.
 
 Axel can be extended with modules that can locate classes that are not currently in the classmap. Once the module provides the location of the file for a given class, the path is cached and the module is never loaded again. Unless new classes are added to the project, Axel loads a single class which does an array key lookup to read the path.
 
-This approach considerably faster and more flexible than composer as custom modules can be written and it doesn't matter how fast they are. Even if locating a file based on a class name is slow, it only happens once when the class is added. After that, Axel stores the result. This approach allows for things like case insensitive PSR-4 style loaders. 
+This approach considerably faster and more flexible than composer as custom modules can be written and it doesn't matter how fast they are. Even if locating a file based on a class name is slow, it only happens once when the class is added. After that, Axel stores the result. This approach allows for things like case insensitive PSR-4 style loaders.
 
 
 Usage
@@ -26,13 +26,31 @@ $axel = new \Axel\Axel;
 
 On its own, Axel does not do anything other than register an autoloader. Once it's been initialised you can tell it where to find your files by adding modules to it.
 
+Note: The `Axel` instance is immutable and adding modules can be done via the `addModule` method:
+
+```php
+$axel = $axel->addModule($moduleName);
+```
+
+
+Once you have fully configured the autoloader you need to register it:
+
+```php
+
+require_once 'axel/axel.php';
+$axel = new \Axel\Axel;
+$axel = $axel->addModule($moduleName);
+$axel->register();
+
+```
+
 Module: PSR4
 --------------------
 
 The PSR4 module allows you to map a namespace to a directory for example, if you have a project in `./lib/mylibrary/` you can map the namespace `MyLibrary` to the directory using:
 
 ```php
-$axel->addModule(new \Axel\Module\PSR4('./lib/MyLibrary', '\\MyLibrary'));
+$axel = $axel->addModule(new \Axel\Module\PSR4('./lib/MyLibrary', '\\MyLibrary'));
 ```
 
 Then, when the autoloader is triggered with
@@ -47,7 +65,7 @@ Axel will now try to load the file `./lib/MyLibrary/Foo.php`
 PSR4 can also be applied more generally so you don't have to create an instance of it for each library you're using. If all your libraries are in `./lib` you can map the root namespace to the dir and have everything work:
 
 ```php
-$axel->addModule(new \Axel\Module\PSR4('./lib/'));
+$axel =  $axel->addModule(new \Axel\Module\PSR4('./lib/'));
 ```
 
 This will add `./lib` as the root directory:
@@ -67,7 +85,7 @@ Because it's [generally a bad idea to make autoloaders case-sensitive](https://r
 
 
 ```php
-$axel->addModule(new \Axel\Module\PSR4('./lib/'));
+$axel = $axel->addModule(new \Axel\Module\PSR4('./lib/'));
 
 new \MyLibrary\Foo();
 ```
@@ -81,77 +99,24 @@ Unlike composer, this allows you to register a PSR4 autoloader for any part of y
 
 
 ```php
-$axel->addModule(new \Axel\Module\PSR4('./Conf', '\\Conf'));
-$axel->addModule(new \Axel\Module\PSR4('./Models', '\\Models'));
-$axel->addModule(new \Axel\Module\PSR4('./Controllers', '\\OnlineShop\\Controllers'));
+$axel = $axel->addModule(new \Axel\Module\PSR4('./Conf', '\\Conf'));
+$axel = $axel->addModule(new \Axel\Module\PSR4('./Models', '\\Models'));
+$axel = $axel->addModule(new \Axel\Module\PSR4('./Controllers', '\\OnlineShop\\Controllers'));
 
 ```
-
-
- 
-Module: Library
----------------
-
-One of the biggest issues with PSR-4 and its predecessor PSR-0 is that it forces library authors to structure their files in compliance with the autoloader. This is backwards, and instead a better way of achieving this is to allow a library to tell the autoloader where to find its files (as opposed to the autoloader telling the library where to place its files)
-
-The difference is subtle but consider taking a library written for PHP5.2 before namespaces were created, to make it work with a PSR-4 autoloader you must manually alter each file adding a namespace and proably moving the files around. This creates work for you, but more importantly you have to do it all again if the non-psr-compliant library is ever updated and you want the new features!
-
-Axel solves this flaw that is inherent to the PSR-4 standard by allowing the library to inform the autoloader how to find its files.
-
-Any library can provide an autoload.json which allows the library to extend the behvaiour of the autoloader.
-
-### autoload.json 
-
-The autoload.json looks like this:
-
-```
-{
- 'include': ['myautoloader.php'],
- 'modules': {
-    'Axel\\Module\\NamespaceMap': ['Foo\\bar', '\\ThisLibrary\\Foo\\Bar'],
-    'MyLibrary\\MyAutoLoader' : ['constructor', 'args', 'for', 'autoloader', 'in', 'myautoloader.php']
-   }
- }
-```
-
-
-The autoload.json has two top level elements: 
-
-`include` which is an array of files which are automatically included.  
-
-`modules` which is a list of modules to register with the autoloader. This can include NamespaceMap and any custom modules that have been loaded in `include`
-
-
-Once you've created autoload.json you need to tell Axel to look for it. This is done by registering the module `Axel\Module\Library` with the autoloader:
-
-
-```php
-$axel->addModule(new \Axel\Module\Library($axel, './lib');
-```
-
-The first parameter to the Library constructor is the `$axel` instance. This is required because the Library module needs to register other modules with the autoloader.
-
-The second parameter is the root directory. In this case './lib'
-
-Once this is set up, the code:
-
-```php
-new MyLibrary\Foo();
-```
-
-Will cause the Library module to look for `./lib/MyLibrary/autoload.json` and load it if it exists. This will then include any required files from the `include` section and register any autload modules from the `modules` section.
-
 
 Module: Composer
 ---------------
 
+Axel contains a module that allows reading `composer.json` to allow easy access to modules installed via  composer.
+
 A drop-in replacement for composer's autoloader. It's faster and allows you to use Axel (Note: Currently only supports PSR-4, not classmap!) to load libraries installed via composer without using composer's autoload.php giving you a single autoloader for everything in the project.
 
 
-Just load the module and tell axel where composer's library directory is and optionally the name of composer's json file inside modules.
+Just load the module and tell Axel the path to the directory containing your `composer.json`. This will recursively load all vendor `composer.json` files and register them with the autoloader.
 
 ```php
-$axel->addModule(\Axel\Module\Composer($axel, './vendor', 'composer.json'));
+$axel =  $axel->addModule(\Axel\Module\Composer($axel, './project'));
 
 ```
 
@@ -163,9 +128,10 @@ You can write your own autoload module by implementing the generic \Autoload\Mod
 
 
 ```php
-namespace Autoload;
+namespace Axel;
 interface Module {
 	public function locate($className);
+	public function configureAutoloader(Axel $axel): $axel;
 }
 
 ```
@@ -175,12 +141,19 @@ Any class which implements this must provide the implementation for the `locate`
 
 ```php
 namespace MyLibrary;
-class MyAutoloader implements \Autoload\Module {
+class MyAutoloader implements \Axel\Module {
 	public function locate($className) {
 		if ($className == 'MyClass') return __DIR__ . DIRECTORY_SEPARATOR . 'MyClass.php';
 		else if ($className == 'OtherClass') return __DIR__ . DIRECTORY_SEPARATOR . 'OtherClass.php';
 		else return false;
-	}	
+	}
+
+	public function configureAutoloader(\Axel\Axel $axel): \Axel\Axel {
+		//If you want to configure the autoloader with additional modules you can do that here:
+		$axel = $axel->addModule(new PSR4('./foo', '\\Foo'));
+		//Otherwise just return the axel instance unchanged
+		return $axel;
+	}
 }
 ```
 
@@ -189,7 +162,7 @@ Caching
 
 Axel supports caching. When caching is enabled, `module::locate` is never called if the result has been retrieived previously. When using autoload.json, the file is only parsed if a file from the library has not been autoloaded before.
 
-To enable caching, create a cache class that implements \ArrayAccess. Alternatively and for an example, see [SimpleCache](https://github.com/TomBZombie/SimpleCache/blob/master/SimpleCache.php).
+To enable caching, create a cache class that implements `\ArrayAccess`. Alternatively and for an example, see [SimpleCache](https://github.com/TomBZombie/SimpleCache/blob/master/SimpleCache.php).
 
 To use a  cache with axel, intiate the cache class:
 
@@ -207,5 +180,5 @@ $axel = new \Axel\Axel($simpleCache);
 
 Axel will now cache any paths behind the scenes. Any time a class is loaded its path is cached so it does not need to be located next time the script runs.
 
-You can pass any instance that uses \ArrayAccess for your cache, behind the scenes this could use memcached, a database or any other caching format such as JSON or XML.
+You can pass any instance that uses `\ArrayAccess` for your cache, behind the scenes this could use memcached, a database or any other caching format such as JSON or XML.
 
