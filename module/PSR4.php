@@ -51,8 +51,4 @@ class PSR4 implements \Axel\Module {
 		}
 	}
 
-	public function configureAutoloader(\Axel\Axel $axel): \Axel\Axel {
-		return $axel;
-	}
-
 }

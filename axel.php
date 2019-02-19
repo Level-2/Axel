@@ -37,14 +37,14 @@ class Axel {
 					$this->paths[$classNameLc] = $file;
 					$this->saveCache = true;
 					require_once $this->paths[$classNameLc];
-					break;
+					return $file;
 				}
 			}
 		}
 	}
 
 	public function addModule(\Axel\Module $module) {
-		$axel = $module->configureAutoloader(clone $this);
+		$axel = clone $this;
 		$axel->modules[] = $module;
 		return $axel;
 	}
